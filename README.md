@@ -1,5 +1,14 @@
 # Sparmatic-Comet
 Open Source Firmware for cheap "Sparmatic Comet" thermostat
 
+## Required Features
+- [ ] Detect Valve Min/Max Position
+- [ ] Set Valve Position (Percent) 
+- [ ] Read Temperature
+- [ ] Button Inputs
+- [ ] Control Display
+- [ ] Battery Voltage
+
+
 ## Schematic
-![Schematics](schematic.jpg "Schematics")
+![Schematics](hardware/schematic.jpg "Schematics")
