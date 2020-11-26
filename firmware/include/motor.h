@@ -1,3 +1,9 @@
+/*
+* motor.h
+* part of Sparmatic-Comet firmware by olel
+*
+*/
+
 #ifndef MOTOR_H_
 #define MOTOR_H_
 

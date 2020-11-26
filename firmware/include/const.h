@@ -1,3 +1,10 @@
+/*
+* const.h
+* part of Sparmatic-Comet firmware by olel
+*
+*/
+
+
 // Stuffs
 #define false 0
 #define true  1
