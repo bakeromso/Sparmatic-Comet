@@ -1,6 +1,8 @@
 TARGET=main
 MCU=atmega169
-SOURCES=main.c
+SOURCES = main.c
+SOURCES += include/lcd.c
+SOURCES += include/motor.c
 
 PROGRAMMER=arduino
 PORT=-Pnet:192.168.0.127:328
@@ -37,8 +39,14 @@ program:
 clean_tmp:
 	rm -rf *.o
 	rm -rf *.elf
+	rm -rf include/*.o
+	rm -rf include/*.elf
 
 clean:
 	rm -rf *.o
 	rm -rf *.elf
 	rm -rf *.hex
+	rm -rf include/*.o
+	rm -rf include/*.elf
+	rm -rf include/*.hex
+	
