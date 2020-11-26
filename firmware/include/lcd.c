@@ -129,7 +129,7 @@ static void displayDigit(uint16_t segments, uint8_t pos)
  * Displays the bargraph.
  * @param bargraphOn each bit represents one hour on the bargraph.
  */
-void displayBargraph(uint32_t bargraphOn)
+void display_bargraph(uint32_t bargraphOn)
 {
 	uint8_t i;
 	for(i = 0; i < sizeof(BargraphSegments); ++i)
@@ -142,7 +142,7 @@ void displayBargraph(uint32_t bargraphOn)
  * Displays the weekday bar.
  * @param dayOn each bit represents one day to display
  */
-void displayWeekday(uint8_t dayOn)
+void display_weekday(uint8_t dayOn)
 {
 	uint8_t i;
 	for(i = 0; i < 7; ++i)
@@ -156,7 +156,7 @@ void displayWeekday(uint8_t dayOn)
  * @param on turn on these symbols
  * @param mask only touch symbols listed here
  */
-void displaySymbols(LCD_SYMBOLS on, LCD_SYMBOLS mask)
+void display_symbols(LCD_SYMBOLS on, LCD_SYMBOLS mask)
 {
 	uint8_t i;
 	for(i = 0; i < sizeof(SymbolSegments); ++i)
@@ -171,7 +171,7 @@ void displaySymbols(LCD_SYMBOLS on, LCD_SYMBOLS mask)
  * @param c ASCII character to display
  * @param pos position on display, 0-NUM_DIGITS
  */
-void displayAsciiDigit(char c, uint8_t pos)
+void display_ascii_digit(char c, uint8_t pos)
 {
 	if(pos >= NUM_DIGITS)
 		return;
@@ -184,12 +184,12 @@ void displayAsciiDigit(char c, uint8_t pos)
  * Outputs a string on the display, beginning on the left digit.
  * @param str string to display, it is displayed up to NUM_DIGITS
  */
-void displayString(char *str)
+void display_string(char *str)
 {
 	uint8_t pos = 0;
 	while (str[pos] && pos < NUM_DIGITS)
 	{
-		displayAsciiDigit(str[pos], pos);
+		display_ascii_digit(str[pos], pos);
 		pos++;
 	}
 }
@@ -201,7 +201,7 @@ void displayString(char *str)
  *  @param width leading with zeroes so we have given width
  *  todo: filling width will be done with sign character...
  */
-void displayNumber(int16_t num, int8_t width)
+void display_number(int16_t num, int8_t width)
 {
 	char buf[NUM_DIGITS + 1];
 	uint8_t i = NUM_DIGITS;
@@ -224,11 +224,11 @@ void displayNumber(int16_t num, int8_t width)
 		buf[--i] = sign;	/* leading sign chars */
 		--width;
 	}
-	displayString(&buf[i]);	/* begin output at first wanted character */
+	display_string(&buf[i]);	/* begin output at first wanted character */
 }
 
 
-void lcdInit(void)
+void display_init(void)
 {
 LCDCRB = (1<<LCDCS)|(0<<LCD2B)|(1<<LCDMUX1)|(1<<LCDMUX0)|(1<<LCDPM2)|(1<<LCDPM1)|(1<<LCDPM0);
 /*
@@ -263,7 +263,7 @@ LCDCRA = (1<<LCDEN)|(1<<LCDAB)|(0<<LCDIE)|(0<<LCDBL);
 */
 }
 
-void lcdOff(void)
+void display_off(void)
 {
 	LCDCRA |= (1 << LCDBL);
 }

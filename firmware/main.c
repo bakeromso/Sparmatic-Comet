@@ -16,15 +16,13 @@
 int main (void) {
     // Init stuff
     motor_init();
-
-    // LCD
-    lcdInit();
+    display_init();
 
     char* disp = "    ";
     uint16_t counter = 0;
     while (1){
         sprintf(disp, "%04d", counter);
-        displayString(disp);
+        display_string(disp);
         _delay_ms(50);
         counter += 1;
     }
