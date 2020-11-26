@@ -6,7 +6,7 @@ Open Source Firmware for cheap "Sparmatic Comet" thermostat
 - [ ] Set Valve Position (Percent) 
 - [ ] Read Temperature
 - [ ] Button Inputs
-- [ ] Control Display
+- [x] Control Display
 - [ ] Battery Voltage / Power loss detection
 
 
