@@ -3,6 +3,7 @@ MCU=atmega169
 SOURCES = main.c
 SOURCES += include/lcd.c
 SOURCES += include/motor.c
+SOURCES += include/inputs.c
 
 PROGRAMMER=arduino
 PORT=-Pnet:192.168.0.127:328
@@ -35,6 +36,8 @@ size:
 
 program:
 	avrdude -p$(MCU) $(PORT) -c$(PROGRAMMER) -Uflash:w:$(TARGET).hex:a
+
+update: all program
 
 clean_tmp:
 	rm -rf *.o
