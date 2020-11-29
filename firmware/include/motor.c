@@ -67,7 +67,6 @@ void motor_extend_step() {
     while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
     motor_stop();
     motor_steps += 1;
-    write_motor_steps();
 }
 
 void motor_retract_step() {
@@ -76,7 +75,6 @@ void motor_retract_step() {
     while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
     motor_stop();
     motor_steps -= 1;
-    write_motor_steps();
 }
 
 void motor_retract_max() {
@@ -98,7 +96,6 @@ void motor_retract_max() {
     }
     motor_stop();
     motor_steps = 0;
-    write_motor_steps();
 }
 void motor_extract_max() {
     #ifdef NOT_MOUNTED
@@ -125,7 +122,6 @@ void motor_extract_max() {
         }
     }
     motor_stop();
-    write_motor_steps();
 }
 
 void motor_adap() {
@@ -157,6 +153,8 @@ void set_valve_rel(uint8_t rel) {
     while (absolute_pos < motor_steps) {
         motor_retract_step();
     }
+
+    write_motor_steps();
 
 }
 
