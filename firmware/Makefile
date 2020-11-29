@@ -13,7 +13,7 @@ OBJECTS=$(SOURCES:.c=.o)
 CFLAGS=-c -Os
 LDFLAGS=
 
-all: hex eeprom
+all: hex
 
 hex: $(TARGET).hex
 

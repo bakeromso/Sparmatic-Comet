@@ -49,3 +49,9 @@
 // DEBUG VALUES
 #define NOT_MOUNTED // Define this if the devices is not mounted to heater
 #define DEBUG_VALVE_MAX  638 // Some random number between 600 -> 700
+
+// EEPROM ADDRESSES
+#define EEP_VALVE_MAX_LOB 0x00    // Maximum valve position
+#define EEP_VALVE_MAX_HIB 0x01
+#define EEP_MOTOR_STEPS_LOB 0x02  // Current motor steps
+#define EEP_MOTOR_STEPS_HIB 0x03

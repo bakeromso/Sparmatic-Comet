@@ -4,11 +4,14 @@
 *
 */
 
-#include <avr/io.h>
-#include "motor.h"
 #include "const.h"
-#include "lcd.h"
+
+#include <avr/io.h>
+#include <avr/eeprom.h>
 #include <util/delay.h>
+
+#include "motor.h"
+#include "lcd.h"
 
 
 // global variables
@@ -129,6 +132,7 @@ void motor_adap() {
     motor_extract_max();
     valve_max = motor_steps;
     motor_retract_max();
+    write_valve_max();
 }
 
 void set_valve_rel(uint8_t rel) {
@@ -158,4 +162,20 @@ uint16_t get_motor_steps() {
 
 uint16_t get_valve_max() {
     return valve_max;
+}
+
+void write_valve_max() {
+    // Writes valve max position to eeprom
+    uint8_t lo = valve_max & 0xff;
+    uint8_t hi = valve_max >> 8;
+    eeprom_write_byte((uint8_t *)EEP_VALVE_MAX_LOB, lo);
+    eeprom_write_byte((uint8_t *)EEP_VALVE_MAX_HIB, hi);
+}
+void read_valve_max() {
+    // Writes valve max position to eeprom
+    uint8_t lo = eeprom_read_byte((uint8_t *)EEP_VALVE_MAX_LOB);
+    uint8_t hi = eeprom_read_byte((uint8_t *)EEP_VALVE_MAX_HIB);
+    
+    valve_max = (hi << 8) | lo;
+    
 }
