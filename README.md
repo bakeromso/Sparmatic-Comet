@@ -12,6 +12,7 @@ Open Source Firmware for cheap "Sparmatic Comet" thermostat
 - [ ] Battery Voltage / Power loss detection
 - [ ] Communicate via Softserial
 - [ ] Wake pin (?)
+- [ ] Basic menu system, manual control stuff
 
 ## Planned Improvements
 - [ ] Rotary encoder
