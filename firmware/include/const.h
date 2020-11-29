@@ -1,6 +1,7 @@
 /*
 * const.h
 * part of Sparmatic-Comet firmware by olel
+* See this as kinda config file
 *
 */
 

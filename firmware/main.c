@@ -25,6 +25,7 @@ int main (void) {
 
     display_string("READ");
     read_valve_max();
+    read_motor_steps();
 
     if (get_valve_max() <= 0 || get_valve_max() > MAX_STEPS) { // EEPROM contains value
         // Initial valve detection
@@ -36,6 +37,13 @@ int main (void) {
     sprintf(disp, "%04d", get_valve_max());
     display_string(disp);
 
+    set_valve_rel(100);
+    sprintf(disp, "%04d", get_motor_steps());
+    display_string(disp);
+
+    set_valve_rel(150);
+    sprintf(disp, "%04d", get_motor_steps());
+    display_string(disp);
 
     while (1){
         _delay_ms(100);

@@ -26,4 +26,7 @@ uint16_t get_valve_max();
 
 void write_valve_max();
 void read_valve_max();
+void write_motor_steps();
+void read_motor_steps();
+
 #endif /* MOTOR_H_ */

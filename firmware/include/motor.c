@@ -67,6 +67,7 @@ void motor_extend_step() {
     while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
     motor_stop();
     motor_steps += 1;
+    write_motor_steps();
 }
 
 void motor_retract_step() {
@@ -75,6 +76,7 @@ void motor_retract_step() {
     while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
     motor_stop();
     motor_steps -= 1;
+    write_motor_steps();
 }
 
 void motor_retract_max() {
@@ -96,6 +98,7 @@ void motor_retract_max() {
     }
     motor_stop();
     motor_steps = 0;
+    write_motor_steps();
 }
 void motor_extract_max() {
     #ifdef NOT_MOUNTED
@@ -122,6 +125,7 @@ void motor_extract_max() {
         }
     }
     motor_stop();
+    write_motor_steps();
 }
 
 void motor_adap() {
@@ -177,5 +181,21 @@ void read_valve_max() {
     uint8_t hi = eeprom_read_byte((uint8_t *)EEP_VALVE_MAX_HIB);
     
     valve_max = (hi << 8) | lo;
+    
+}
+void write_motor_steps() {
+    // Writes current motor steps to eeprom
+    uint8_t lo = motor_steps & 0xff;
+    uint8_t hi = motor_steps >> 8;
+    eeprom_write_byte((uint8_t *)EEP_MOTOR_STEPS_LOB, lo);
+    eeprom_write_byte((uint8_t *)EEP_MOTOR_STEPS_HIB, hi);
+}
+void read_motor_steps() {
+    // Reads current motor steps from eeprom
+    // Call this after wakeup/reset !
+    uint8_t lo = eeprom_read_byte((uint8_t *)EEP_MOTOR_STEPS_LOB);
+    uint8_t hi = eeprom_read_byte((uint8_t *)EEP_MOTOR_STEPS_HIB);
+    
+    motor_steps = (hi << 8) | lo;
     
 }
