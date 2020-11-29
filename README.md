@@ -19,4 +19,4 @@ Open Source Firmware for cheap "Sparmatic Comet" thermostat
 - [ ] Code refectoring when everything is working somehow :D
 
 ## Schematic
-![Schematics](hardware/schematic.jpg "Schematics")
+![Schematics](hardware/schematic.jpg.svg "Schematics")
