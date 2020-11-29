@@ -37,7 +37,7 @@ size:
 program:
 	avrdude -p$(MCU) $(PORT) -c$(PROGRAMMER) -Uflash:w:$(TARGET).hex:a
 
-update: all program
+update: clean all program
 
 clean_tmp:
 	rm -rf *.o
