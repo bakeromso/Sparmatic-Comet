@@ -7,10 +7,13 @@
 #include <avr/io.h>
 #include "motor.h"
 #include "const.h"
+#include "lcd.h"
 #include <util/delay.h>
+
 
 // global variables
 uint16_t motor_steps = 0;
+uint16_t valve_max = 0;
 
 void motor_init() {
     // Initialise motor
@@ -91,16 +94,22 @@ void motor_retract_max() {
     motor_stop();
     motor_steps = 0;
 }
-/*
-void motor_extend_max() {
+void motor_extract_max() {
+    #ifdef NOT_MOUNTED
+    while (motor_steps < DEBUG_VALVE_MAX) {
+        motor_extend_step();
+    }
+    return;
+    #endif
     uint16_t cycles = 0;
     uint8_t running = true;
     uint8_t current_val;
-    motor_extend();
+    _motor_extract();
     while (running) {
+        motor_steps ++;
         cycles = 0;
-        current_val = read_motor_pulse();
-        while (read_motor_pulse() == current_val){
+        current_val = _read_motor_pulse();
+        while (_read_motor_pulse() == current_val){
             cycles += 1;
             if (cycles > 100){
                 running = false;
@@ -111,4 +120,42 @@ void motor_extend_max() {
     }
     motor_stop();
 }
-*/
+
+void motor_adap() {
+    /*
+    Detect maximum valve position
+    */
+    motor_retract_max();
+    motor_extract_max();
+    valve_max = motor_steps;
+    motor_retract_max();
+}
+
+void set_valve_rel(uint8_t rel) {
+    /*
+    Sets valve to relative position:
+    Run motor_adap() to calibrate before!!
+    0x00 -> Valve closed
+    0xff -> Valve opened
+    */
+
+    // Calc with float to make math easier
+    float percent = 1.0 - (rel / (float)0xff);
+    uint16_t absolute_pos = (uint16_t) (percent * valve_max);
+    
+    while (absolute_pos > motor_steps) {
+        motor_extend_step();
+    }
+    while (absolute_pos < motor_steps) {
+        motor_retract_step();
+    }
+
+}
+
+uint16_t get_motor_steps() {
+    return motor_steps;
+}
+
+uint16_t get_valve_max() {
+    return valve_max;
+}
