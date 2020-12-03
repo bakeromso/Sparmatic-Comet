@@ -15,15 +15,32 @@
 volatile int16_t enc = 0;
 int16_t prev_enc = 0;
 
-ISR(PCINT1_vect){
-    bool rot_a_val = (ROT_PIN & (1 << ROT_A)) > 0;
-    bool rot_b_val = (ROT_PIN & (1 << ROT_B)) > 0;
-    if (rot_a_val & !rot_b_val){
-        enc --;
+#define ROT_A_VAL !((1<<ROT_A) & ROT_PIN)
+#define ROT_B_VAL !((1<<ROT_B) & ROT_PIN)
+
+uint8_t rotarystatus = 0;
+
+void enc_check_status(){
+    if(ROT_A_VAL & (!ROT_B_VAL)){
+        while(ROT_A_VAL); // ! (?)
+        if (ROT_B_VAL)
+            enc ++;
+            //check if rotation is right
     }
-    if (rot_a_val & rot_b_val){
-        enc ++;
+    else if(ROT_B_VAL & (!ROT_A_VAL)) {
+        while(ROT_B_VAL); // ! (?)
+        if (ROT_A_VAL)
+            enc --;
     }
+    else if (ROT_A_VAL & ROT_B_VAL) {
+        while(ROT_A_VAL); // ! (?)
+        if (ROT_B_VAL) enc ++;
+        else enc --;
+    }
+ } 
+
+ISR(TIMER0_OVF_vect){
+    enc_check_status();
 }
 
 void inputs_init() {
@@ -33,9 +50,9 @@ void inputs_init() {
     BTN_DDR &= ~(1 << BTN_MENU);
 
     PORTB |= (1 << ROT_A) | (1 << ROT_B) | (1 << BTN_MENU); // Internal pullups
-    
-    EIMSK |= (1 << 5); // External Interrupt Mask (Enable PCIE1)
-    PCMSK1 |= (1 << PCINT8); // Pin Change Interrupt 1 Mask (Enable PCINT8 & 15 (ROT_A & ROT_B))
+
+    TCCR0A |=  (1 << CS02) | (1<<CS00); //prescaller 256 ~122 interrupts/s
+    TIMSK0 |= (1<<TOIE2);          //Enable Timer0 Overflow interrupts
     sei();
 }
 
