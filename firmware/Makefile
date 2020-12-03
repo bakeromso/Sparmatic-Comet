@@ -4,6 +4,7 @@ SOURCES = main.c
 SOURCES += include/lcd.c
 SOURCES += include/motor.c
 SOURCES += include/inputs.c
+SOURCES += include/ntc.c
 
 PROGRAMMER=arduino
 PORT=-Pnet:192.168.0.127:328
