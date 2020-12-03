@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "motor.h"
@@ -15,8 +16,14 @@
 
 
 // global variables
-uint16_t motor_steps = 0;
+volatile uint16_t motor_steps = 0;
 uint16_t valve_max = 0;
+
+// local variables
+#define RETRACT 0
+#define EXTRACT 1
+uint8_t motor_direction = RETRACT;
+
 
 void motor_init() {
     // Initialise motor
@@ -30,8 +37,24 @@ void motor_init() {
     // Turn everything on
     motor_after_sleep();
 
+    // Enable interrupts
+    EIMSK |= (1 << 4); // External Interrupt Mask (Enable PCIE0)
+    PCMSK0 |= (1 << PCINT3); // Pin Change Interrupt 0 Mask (Enable PCINT3, Motor Encoder)
+    sei();
+
     // Turn off motor
     motor_stop();
+}
+
+ISR(PCINT0_vect) {
+    if (motor_direction == RETRACT) {
+        if (motor_steps > 0) {
+            motor_steps --;
+        }
+    }
+    else{
+        motor_steps ++;
+    }
 }
 
 void motor_after_sleep(){
@@ -51,6 +74,15 @@ void _motor_retract() {
 
 }
 
+void _motor_move() {
+    if (motor_direction == RETRACT) {
+        _motor_retract();
+    }
+    else{
+        _motor_extract();
+    }
+}
+
 void motor_stop() {
     // Stop motor
     MOTOR_PORT &= ~(1 << MOTOR_A);
@@ -61,33 +93,18 @@ uint8_t _read_motor_pulse() {
     return MOTOR_PULSE_PIN & (1 << MOTOR_PULSE_INP);
 }
 
-void motor_extend_step() {
-    uint8_t current_val = _read_motor_pulse();
-    _motor_extract();
-    while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
-    motor_stop();
-    motor_steps += 1;
-}
-
-void motor_retract_step() {
-    uint8_t current_val = _read_motor_pulse();
-    _motor_retract();
-    while (_read_motor_pulse() == current_val); // Wait until motor pulse value changed
-    motor_stop();
-    motor_steps -= 1;
-}
-
 void motor_retract_max() {
     uint16_t cycles = 0;
     uint8_t running = true;
-    uint8_t current_val;
-    _motor_retract();
+    uint16_t current_val;
+    motor_direction = RETRACT;
+    _motor_move();
     while (running) {
         cycles = 0;
-        current_val = _read_motor_pulse();
-        while (_read_motor_pulse() == current_val){
+        current_val = motor_steps;
+        while (motor_steps == current_val){
             cycles += 1;
-            if (cycles > 100){
+            if (cycles > STUCK_COUNT){
                 running = false;
                 break;
             }
@@ -99,20 +116,24 @@ void motor_retract_max() {
 }
 void motor_extract_max() {
     #ifdef NOT_MOUNTED
+    motor_direction = EXTRACT;
+    _motor_move();
     while (motor_steps < DEBUG_VALVE_MAX) {
-        motor_extend_step();
+        ;
     }
+    motor_stop();
     return;
     #endif
     uint16_t cycles = 0;
     uint8_t running = true;
-    uint8_t current_val;
-    _motor_extract();
+    uint16_t current_val;
+    motor_direction = EXTRACT;
+    _motor_move();
     while (running) {
         motor_steps ++;
         cycles = 0;
-        current_val = _read_motor_pulse();
-        while (_read_motor_pulse() == current_val){
+        current_val = motor_steps;
+        while (motor_steps == current_val){
             cycles += 1;
             if (cycles > 100){
                 running = false;
@@ -147,19 +168,30 @@ void set_valve_rel(uint8_t rel) {
     float percent = 1.0 - (rel / (float)0xff);
     uint16_t absolute_pos = (uint16_t) (percent * valve_max);
     
-    while (absolute_pos > motor_steps) {
-        motor_extend_step();
+    cli();
+    if (absolute_pos == motor_steps){
+        sei();
+        return; // Cancel if nothing changed
     }
-    while (absolute_pos < motor_steps) {
-        motor_retract_step();
-    }
+    sei();
 
+    uint8_t dest_reached = 0;
+    
+    motor_direction = (absolute_pos > motor_steps) ? EXTRACT : RETRACT;
+    _motor_move();
+
+    if(absolute_pos < motor_steps) while (absolute_pos < motor_steps);
+    if(absolute_pos > motor_steps) while (absolute_pos > motor_steps);
+
+    motor_stop();
     write_motor_steps();
-
 }
 
 uint16_t get_motor_steps() {
-    return motor_steps;
+    cli();
+    uint16_t ret = motor_steps;
+    sei();
+    return ret;
 }
 
 uint16_t get_valve_max() {

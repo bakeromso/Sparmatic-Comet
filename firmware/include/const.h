@@ -38,6 +38,7 @@
 #define MOTOR_PULSE_PIN PINE
 #define ROT_PIN         PINB
 #define BTN_PIN         PINB
+#define NTC_PORT        PORTF
 
 // MACROS
 #define PIN_HIGH(PORT, PIN) PORT |= (1 << PIN)
@@ -45,6 +46,7 @@
 
 // HARDWARE VALUES
 #define MAX_STEPS  850
+#define STUCK_COUNT 100
 #define F_CPU 1000000UL 
 
 // DEBUG VALUES
