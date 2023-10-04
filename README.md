@@ -1,5 +1,5 @@
 # Sparmatic-Comet
-Open Source Firmware for cheap "Sparmatic Comet" thermostat
+Open Source Firmware for cheap "Sparmatic Comet" thermostat. Product page [here](https://www.microchip.com/en-us/product/ATmega169P).
 
 ## Required Features
 - [x] Detect Valve Min/Max Position
@@ -20,3 +20,4 @@ Open Source Firmware for cheap "Sparmatic Comet" thermostat
 
 ## Schematic
 ![Schematics](hardware/schematic.jpg.svg "Schematics")
+
